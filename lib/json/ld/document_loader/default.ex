@@ -6,17 +6,24 @@ defmodule JSON.LD.DocumentLoader.Default do
 
   @spec load(String.t(), Options.t()) :: {:ok, RemoteDocument.t()} | {:error, any}
   def load(url, _options) do
-    with {:ok, res} <- http_get(url),
-         {:ok, data} <- Jason.decode(res.body) do
-      {:ok, %RemoteDocument{document: data, document_url: res.request_url}}
+    with {:ok, res} <- http_get(url) do
+      {:ok, %RemoteDocument{document: res.body, document_url: res.url}}
     end
   end
 
-  @spec http_get(String.t()) ::
-          {:ok, HTTPoison.Response.t() | HTTPoison.AsyncResponse.t()} | {:error, any}
+  @content_type ["application/ld+json", "application/json"]
+
+  @spec http_get(String.t()) :: Tesla.Env.result()
   defp http_get(url) do
-    HTTPoison.get(url, [accept: "application/ld+json"], follow_redirect: true)
+    client =
+      Tesla.client([
+        {Tesla.Middleware.Headers, [{"accept", @content_type |> Enum.join(", ")}]},
+        {Tesla.Middleware.JSON, decode_content_types: @content_type},
+        Tesla.Middleware.FollowRedirects
+      ])
+
+    Tesla.get(client, url)
   rescue
-    e -> {:error, "HTTPoison failed: #{inspect(e)}"}
+    e -> {:error, "Tesla failed: #{inspect(e)}"}
   end
 end
