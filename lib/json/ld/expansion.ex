@@ -13,8 +13,8 @@ defmodule JSON.LD.Expansion do
 
     active_context =
       case options.expand_context do
-        %{"@context" => context} -> Context.update(active_context, context)
-        %{} = context -> Context.update(active_context, context)
+        %{"@context" => context} -> Context.update(active_context, context, [], options)
+        %{} = context -> Context.update(active_context, context, [], options)
         nil -> active_context
       end
 
