@@ -1,5 +1,5 @@
 import Config
 
-if config_env() == :test do
+if Mix.env() == :test do
   config :tesla, adapter: Tesla.Adapter.Hackney
 end
