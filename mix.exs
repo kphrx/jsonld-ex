@@ -65,7 +65,7 @@ defmodule JSON.LD.Mixfile do
     [
       rdf_ex_dep(:rdf, "~> 0.9"),
       {:jason, "~> 1.2"},
-      {:httpoison, "~> 1.6"},
+      {:tesla, "~> 1.4"},
       {:dialyxir, "~> 1.1", only: :dev, runtime: false},
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
       {:bypass, "~> 2.1", only: :test},
