@@ -152,16 +152,13 @@ defmodule JSON.LD.ContextTest do
 
   describe "remote contexts" do
     test "when the remote context is a list" do
-      bypass = Bypass.open()
-
-      Bypass.expect(bypass, fn conn ->
-        assert "GET" == conn.method
-        assert "/litepub-0.1.jsonld" == conn.request_path
-        context = File.read!("test/fixtures/litepub-0.1.jsonld")
-        Plug.Conn.resp(conn, 200, context)
+      Tesla.Mock.mock(fn
+        %{method: :get, url: "http://jsonld.test/litepub-0.1.jsonld"} ->
+          context = File.read!("test/fixtures/litepub-0.1.jsonld")
+          %Tesla.Env{status: 200, body: context}
       end)
 
-      assert context = JSON.LD.context("http://localhost:#{bypass.port}/litepub-0.1.jsonld")
+      assert context = JSON.LD.context("http://jsonld.test/litepub-0.1.jsonld")
 
       assert %{
                "Emoji" => "http://joinmastodon.org/ns#Emoji",
