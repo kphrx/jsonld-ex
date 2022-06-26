@@ -626,27 +626,23 @@ defmodule JSON.LD.EncoderTest do
     end
 
     test ":context with a remote context" do
-      bypass = Bypass.open()
-
-      Bypass.expect(bypass, fn conn ->
-        assert "GET" == conn.method
-        assert "/test-context" == conn.request_path
-
-        context = %{
-          "@context" => %{
-            "givenName" => "http://schema.org/givenName",
-            "familyName" => "http://schema.org/familyName",
-            "homepage" => %{
-              "@id" => "http://schema.org/url",
-              "@type" => "@id"
+      Tesla.Mock.mock(fn
+        %{method: :get, url: "http://json-ld.test/context"} ->
+          context = %{
+            "@context" => %{
+              "givenName" => "http://schema.org/givenName",
+              "familyName" => "http://schema.org/familyName",
+              "homepage" => %{
+                "@id" => "http://schema.org/url",
+                "@type" => "@id"
+              }
             }
           }
-        }
 
-        Plug.Conn.resp(conn, 200, Jason.encode!(context))
+          Tesla.Mock.json(context)
       end)
 
-      remote_context = "http://localhost:#{bypass.port}/test-context"
+      remote_context = "http://json-ld.test/context"
 
       graph =
         ~I<http://manu.sporny.org/about#manu>

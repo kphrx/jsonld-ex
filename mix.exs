@@ -68,7 +68,6 @@ defmodule JSON.LD.Mixfile do
       {:tesla, "~> 1.4"},
       {:dialyxir, "~> 1.1", only: :dev, runtime: false},
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
-      {:bypass, "~> 2.1", only: :test},
       {:excoveralls, "~> 0.14", only: :test}
     ]
   end
